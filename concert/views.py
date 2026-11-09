@@ -34,7 +34,10 @@ def songs(request):
     # return render(request, "songs.html", {"songs": [insert list here]})
     response = req.get(os.environ.get('SONGS_SERVICE_URL', 'http://127.0.0.1:5000') + '/song', timeout=10)
     response.raise_for_status()
-    return render(request, 'songs.html', {'songs': response.json()})
+    items = response.json()
+    if request.GET.get('id', '').isdigit():
+        items = [item for item in items if item['id'] == int(request.GET['id'])]
+    return render(request, 'songs.html', {'songs': items})
 
 
 def photos(request):
@@ -42,7 +45,10 @@ def photos(request):
     # return render(request, "photos.html", {"photos": photos})
     response = req.get(os.environ.get('PICTURES_SERVICE_URL', 'http://127.0.0.1:5001') + '/picture', timeout=10)
     response.raise_for_status()
-    return render(request, 'photos.html', {'photos': response.json()})
+    items = response.json()
+    if request.GET.get('id', '').isdigit():
+        items = [item for item in items if item['id'] == int(request.GET['id'])]
+    return render(request, 'photos.html', {'photos': items})
 
 def login_view(request):
     form = LoginForm(request=request, data=request.POST or None)
